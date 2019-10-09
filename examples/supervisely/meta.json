@@ -1,0 +1,11 @@
+{
+  "classes": [
+    {
+      "title": "face",
+      "shape": "rectangle",
+      "color": "#E00B0B",
+      "geometry_config": {}
+    }
+  ],
+  "tags": []
+}
