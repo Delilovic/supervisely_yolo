@@ -29,7 +29,7 @@
     ├── meta.json
     └── dataset
         ├── img
-        │    ├── any_name.jpg or(.jpeg, .png) => extension is often hidden (don't do any_name.jpg.jpg)
+        │    ├── any_name.jpg or(.jpeg, .png)
         │    └── ...
         └── ann
             ├── any_name.json
@@ -39,7 +39,7 @@
 ```
 ├── yolo
     ├── images
-    │   ├── any_name.jpg or(.jpeg, .png) => extension is often hidden (don't do any_name.jpg.jpg)
+    │   ├── any_name.jpg or(.jpeg, .png)
     │   └── ...
     └── labels
         ├── classes.txt
