@@ -19,8 +19,8 @@
 
 ## Required Folder Structure
    * Please follow this structure strictly 
-        - you can not have two different Supervisely datasets at the moment (if you do put everything into the dataset folder)
-        - you can not have Yolo images and labels in one folder (if you do separate them into labels and images folder)
+        - you can not have two different Supervisely datasets at the moment (if you do, put everything into the dataset folder)
+        - you can not have Yolo images and labels in one folder (if you do, separate them into labels and images folder)
         - data structure is case sensitive (e.g. yolo can not be Yolo)
         
 #### Supervisely (-t s2y)
