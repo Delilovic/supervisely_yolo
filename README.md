@@ -1,5 +1,5 @@
 # supervisely_yolo.py
-###(Script to convert Supervisely to Yolo (Darknet) data structure/format and vice versa)
+### (Script to convert Supervisely to Yolo (Darknet) data structure/format and vice versa)
 
 * If you convert from Yolo to Supervisely (supervisely_yolo -t y2s) then you need to install the OpenCV python package:
     pip install opencv-python
