@@ -5,6 +5,12 @@
       "shape": "rectangle",
       "color": "#E00B0B",
       "geometry_config": {}
+    },
+    {
+      "title": "face2",
+      "shape": "rectangle",
+      "color": "#BD10E0",
+      "geometry_config": {}
     }
   ],
   "tags": []

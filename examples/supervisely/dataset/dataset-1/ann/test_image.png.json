@@ -1,0 +1,48 @@
+{
+  "description": "",
+  "tags": [],
+  "size": {
+    "height": 512,
+    "width": 512
+  },
+  "objects": [
+    {
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "face",
+      "points": {
+        "exterior": [
+          [
+            213,
+            195
+          ],
+          [
+            348,
+            391
+          ]
+        ],
+        "interior": []
+      }
+    },
+{
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "face2",
+      "points": {
+        "exterior": [
+          [
+            213,
+            195
+          ],
+          [
+            348,
+            391
+          ]
+        ],
+        "interior": []
+      }
+    }
+  ]
+}
