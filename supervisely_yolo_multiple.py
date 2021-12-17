@@ -108,8 +108,6 @@ class S2Y:
                     text_file.write('\n')
 
 
-
-
 class Y2S:
     @staticmethod
     def create_supervisely_file_structure():
@@ -135,21 +133,27 @@ class Y2S:
 
         image = cv2.imread(image_path, 0)
         h, w = image.shape[:2]
+        class_coord_list = []
 
         image_text_file = yolo_path + '//labels//' + file_name + '.txt'
-        with open(image_text_file) as file:
-            data = file.readline().split()
-            class_id = int(data[0])
-            bbox_width = float(data[3]) * w
-            bbox_height = float(data[4]) * h
-            center_x = float(data[1]) * w
-            center_y = float(data[2]) * h
-            x1 = int(center_x - (bbox_width / 2))
-            y1 = int(center_y - (bbox_height / 2))
-            x2 = int(center_x + (bbox_width / 2))
-            y2 = int(center_y + (bbox_height / 2))
 
-        return w, h, class_id, x1, y1, x2, y2
+        with open(image_text_file) as file:
+            # read all labels, split by line and add to list
+            all_labels= file.read().splitlines()
+
+            for data in [x.split() for x in all_labels]:
+                class_id = int(data[0])
+                bbox_width = float(data[3]) * w
+                bbox_height = float(data[4]) * h
+                center_x = float(data[1]) * w
+                center_y = float(data[2]) * h
+                x1 = int(center_x - (bbox_width / 2))
+                y1 = int(center_y - (bbox_height / 2))
+                x2 = int(center_x + (bbox_width / 2))
+                y2 = int(center_y + (bbox_height / 2))
+                class_coord_list.append({"class_id": class_id, "x1": x1, "y1": y1, "x2": x2, "y2": y2})
+
+        return w, h, class_coord_list
 
     @staticmethod
     def create_meta_file(class_names_array):
@@ -168,7 +172,7 @@ class Y2S:
 
     @staticmethod
     def create_json_file(file_name, class_names_array):
-        w, h, class_id, x1, y1, x2, y2 = Y2S.get_supervisely_annotation_info(file_name)
+        w, h, class_coord_list = Y2S.get_supervisely_annotation_info(file_name)
 
         json_format = {
             "description": "",
@@ -178,26 +182,31 @@ class Y2S:
                 "height": h
             },
             "tags": [],
-            "objects": [{
+            "objects": [
+            ]
+        }
+
+        for class_coord in class_coord_list:
+
+            json_format["objects"].append({
                 "description": "",
                 "tags": [],
                 "bitmap": None,
-                "classTitle": class_names_array[class_id],
+                "classTitle": class_names_array[class_coord['class_id']],
                 "points": {
                     "exterior": [
                         [
-                            x1,
-                            y1
+                            class_coord['x1'],
+                            class_coord['y1']
                         ],
                         [
-                            x2,
-                            y2
+                            class_coord['x2'],
+                            class_coord['y2']
                         ]
                     ],
                     "interior": []
                 }
-            }]
-        }
+            })
 
         json_file_path = supervisely_path + '//dataset//ann//' + file_name + '.json'
         with open(json_file_path, 'w') as json_file:
