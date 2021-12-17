@@ -28,12 +28,20 @@
 ├── supervisely
     ├── meta.json
     └── dataset
-        ├── img
-        │    ├── any_name.jpg or(.jpeg, .png)
-        │    └── ...
-        └── ann
-            ├── any_name.json
-            └── ...
+        └── dataset1
+            ├── img
+            │    ├── any_name.jpg or(.jpeg, .png)
+            │    └── ...
+            └── ann
+                ├── any_name.json
+                └── ...
+        └── dataset2
+            ├── img
+            │    ├── any_name.jpg or(.jpeg, .png)
+            │    └── ...
+            └── ann
+                ├── any_name.json
+                └── ...
 ```
 #### Yolo (-t y2s)
 ```
