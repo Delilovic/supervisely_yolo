@@ -27,21 +27,20 @@
 ```
 ├── supervisely
     ├── meta.json
-    └── dataset
-        └── dataset1
-            ├── img
-            │    ├── any_name.jpg or(.jpeg, .png)
-            │    └── ...
-            └── ann
-                ├── any_name.json
-                └── ...
-        └── dataset2
-            ├── img
-            │    ├── any_name.jpg or(.jpeg, .png)
-            │    └── ...
-            └── ann
-                ├── any_name.json
-                └── ...
+    └── dataset1
+        ├── img
+        │    ├── any_name.jpg or(.jpeg, .png)
+        │    └── ...
+        └── ann
+            ├── any_name.json
+            └── ...
+    └── dataset2
+        ├── img
+        │    ├── any_name.jpg or(.jpeg, .png)
+        │    └── ...
+        └── ann
+            ├── any_name.json
+            └── ...
 ```
 #### Yolo (-t y2s)
 ```
@@ -50,7 +49,6 @@
     │   ├── any_name.jpg or(.jpeg, .png)
     │   └── ...
     └── labels
-        ├── classes.txt
         ├── any_name.txt
         └── ...
 ```  
