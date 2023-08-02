@@ -35,6 +35,11 @@ s2y_flag = "s2y"
 class S2Y:
     @staticmethod
     def get_class_names_from_supervisely(input_path: str) -> typing.List:
+        """
+        Get class names from meta.json file.
+        :param input_path: path of Supervise.ly dataset folder
+        :return: list of all classes used in Supervise.ly dataset
+        """
         class_names_array = []
         class_names_path = os.path.join(input_path, 'meta.json')
         with open(class_names_path, "r") as file:
@@ -45,6 +50,11 @@ class S2Y:
 
     @staticmethod
     def create_yolo_file_structure(output_path: str) -> None:
+        """
+        Create the folder hierarchy to welcome the images and the label files. The YOLO dataset structure can be found
+        in the ReadME.md
+        :param output_path: absolute path of YOLO dataset
+        """
         for step in ["train", "val"]:
             os.makedirs(os.path.join(output_path, step, 'labels'), exist_ok=True)
             os.makedirs(os.path.join(output_path, step, 'images'), exist_ok=True)
@@ -58,6 +68,16 @@ class S2Y:
 
     @staticmethod
     def create_data_file(class_name_list: typing.List, output_path: str) -> None:
+        """
+        Create YOLO .yaml data file which is a yaml file gathering several dataset information:
+        - train images folder
+        - val images folder
+        - test images' folder (currently not used in this project)
+        - number of object classes
+        - object class names
+        :param class_name_list: list of all object classes used in the Supervise.ly input dataset
+        :param output_path: Path of YOLO project
+        """
         class_file_path = os.path.join(output_path, 'data.yaml')
         dict_yaml = {"train": "train/images",
                      "val": "val/images",
@@ -95,6 +115,12 @@ class S2Y:
 
     @staticmethod
     def create_text_file(output_folder: str, y_file: str, class_names_array: typing.List) -> None:
+        """
+        Write a YOLO txt file corresponding to Supervise.ly annotation json file.
+        :param output_folder: Outout folder where YOLO dataset will lie.
+        :param y_file: absolute path of the Supervise.ly json annotation file.
+        :param class_names_array: list of all object classes in Supervise.ly the dataset.
+        """
         # class_id, x1, y1, x2, y2 = S2Y.get_yolo_annotation_info(folder_name, file_name, class_names_array)
         class_coord_list = S2Y.get_yolo_annotation_info(json_file=y_file, class_names_array=class_names_array)
 
@@ -116,20 +142,19 @@ class S2Y:
 
 class Y2S:
     @staticmethod
-    def create_supervisely_file_structure():
+    def create_supervisely_file_structure(input_path):
         os.makedirs(os.path.dirname(input_path + '//dataset_1//ann//'), exist_ok=True)
         os.makedirs(os.path.dirname(input_path + '//dataset_1//img//'), exist_ok=True)
 
     @staticmethod
-    def get_class_names_from_yolo():
+    def get_class_names_from_yolo(output_path: str):
         class_names_path = output_path + '//labels//classes.txt'
         with open(class_names_path) as file:
             class_names_array = file.read().splitlines()
         return class_names_array
 
     @staticmethod
-    def get_supervisely_annotation_info(file_name):
-        import cv2
+    def get_supervisely_annotation_info(file_name, output_path=None, skip_copy=None, input_path=None):
         for image_path in glob.glob(os.path.join(output_path + "//images//", file_name + '.*')):
             pass
 
@@ -162,7 +187,7 @@ class Y2S:
         return w, h, class_coord_list
 
     @staticmethod
-    def create_meta_file(class_names_array):
+    def create_meta_file(class_names_array, input_path):
         classes_array = []
         for name in class_names_array:
             classes_array.append({"title": name, "shape": "rectangle", "color": "#FF0000"})
@@ -177,8 +202,9 @@ class Y2S:
             json.dump(meta_format, json_file)
 
     @staticmethod
-    def create_json_file(file_name, class_names_array):
-        w, h, class_coord_list = Y2S.get_supervisely_annotation_info(file_name)
+    def create_json_file(file_name: str, class_names_array: typing.List, input_path: str, output_path: str,
+                         skip_copy: bool) -> str:
+        w, h, class_coord_list = Y2S.get_supervisely_annotation_info(file_name, output_path, skip_copy, input_path)
 
         json_format = {
             "description": "",
@@ -218,7 +244,13 @@ class Y2S:
             json.dump(json_format, json_file)
 
 
-def img_path_from_label(y_path):
+def img_path_from_label(y_path: str) -> str:
+    """
+    Get image absolute path from corresponding annotation file path.
+    Transform 'img' folder to 'ann' folder in the absolute path
+    :param y_path:
+    :return:
+    """
     head, tail = os.path.split(y_path)
     x_name = tail[:-5]
     list_path = head.split(os.sep)
@@ -227,31 +259,45 @@ def img_path_from_label(y_path):
     return os.path.join(*list_path)
 
 
-def img_set_from_labels(annotation_files: typing.List):
+def img_set_from_labels(annotation_files: typing.List) -> typing.List:
+    """
+    Get image set from label set thanks to the annotation path. Label set is made up of json annotation full paths.
+    :param annotation_files: list of annotations files which compose the label set
+    :return: Image set with absolute path of each picture in the set.
+    """
     X = []
     for ann_file in annotation_files:
         X.append(img_path_from_label(y_path=ann_file))
     return X
 
 
-def main(dest_path: str, input_path: str, skip_copy: bool, conversion_type: str, test_size: float):
+def main(dest_path: str, input_path: str, skip_copy: bool, conversion_type: str, test_size: float) -> None:
+    """
+    Main function which enables the possibility to pass from YOLO dataset to Supervise.ly dataset and inversely.
+    :param dest_path: Output folder path
+    :param input_path: Input folder path
+    :param skip_copy: *not used for the moment*
+    :param conversion_type: type of conversion, could be Supervise.ly to YOLO or YOLO to Supervise.ly
+    :param test_size: proportion of the dataset to include in the test split
+    """
 
     print("Processing...")
     if conversion_type == y2s_flag:
         try:
-            class_names_array = Y2S.get_class_names_from_yolo()
+            class_names_array = Y2S.get_class_names_from_yolo(output_path=dest_path)
         except IOError:
             print('Error [classes.txt not found] => There should be a folder "yolo" at {0}'.format(dest_path[:-4]))
             exit(1)
-        Y2S.create_supervisely_file_structure()
-        Y2S.create_meta_file(class_names_array)
+        Y2S.create_supervisely_file_structure(input_path=input_path)
+        Y2S.create_meta_file(class_names_array, input_path)
 
         labels_path = dest_path + "//labels"
         for file_path in glob.glob(os.path.join(labels_path, '*.txt')):
             with open(file_path) as file:
                 file_name = os.path.basename(file.name)[:-4]
                 if file_name != 'classes':
-                    Y2S.create_json_file(file_name, class_names_array)
+                    Y2S.create_json_file(file_name=file_name, class_names_array=class_names_array, input_path=input_path,
+                                         output_path=dest_path, skip_copy=skip_copy)
         print("Supervisely structure created at => {}".format(input_path))
     else:
         try:
@@ -294,10 +340,9 @@ def main(dest_path: str, input_path: str, skip_copy: bool, conversion_type: str,
 
 if __name__ == "__main__":
     parser = optparse.OptionParser()
-    parser.add_option('-p', '--path',
+    parser.add_option('-p', '--dest_path',
                       action="store", dest="dest_path",
-                      help="full path of the source folder (default path is the location of this script)",
-                      default=os.path.dirname(os.path.realpath(__file__)))
+                      help="full path of the output folder")
 
     parser.add_option('-i', '--input_path', dest="input_path",
                       help="full path of the source folder (default path is the location of this script)",
@@ -317,8 +362,8 @@ if __name__ == "__main__":
                       default=s2y_flag)
 
     parser.add_option('--test_size',
-                      dest="test_size",
-                      # help="conversion type: yolo2supervisely or supervisely2yolo (default supervisely2yolo)",
+                      dest="test_size", type=float,
+                      help="Represent the proportion of the dataset to include in the test split",
                       default=0.15)
 
     options, args = parser.parse_args()

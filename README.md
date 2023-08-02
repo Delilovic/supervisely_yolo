@@ -45,6 +45,7 @@
 #### Yolo (-t y2s)
 ```
 ├── yolo
+    ├── data.yaml
     ├── images
     │   ├── any_name.jpg or(.jpeg, .png)
     │   └── ...
