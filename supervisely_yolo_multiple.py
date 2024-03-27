@@ -322,10 +322,23 @@ def main(dest_path: str, input_path: str, skip_copy: bool, conversion_type: str,
 
         X = img_set_from_labels(annotation_files=y)
 
-        try:
-            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=42)
-        except Exception as e:
-            raise ("An exception occurred when try to split the dataset_1 in test/val part due to : " + str(e))
+        if test_size == 0:
+            X_train = X
+            y_train = y
+            X_test = []
+            y_test = []
+
+        elif test_size == 1:
+            X_train = []
+            y_train = []
+            X_test = X
+            y_test = y
+
+        else:
+            try:
+                X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=42)
+            except Exception as e:
+                raise ("An exception occurred when try to split the dataset_1 in test/val part due to : " + str(e))
 
         for step_name, step_tuples in zip(["train", "val"], [(X_train, y_train), (X_test, y_test)]):
             img_list, ann_list = step_tuples
